@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cyber_portal
+      POSTGRES_USER: cyber
+      POSTGRES_PASSWORD: cyber_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://cyber:cyber_dev_password@postgres:5432/cyber_portal
+      JWT_SECRET: replace-with-a-long-random-secret
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+volumes:
+  postgres_data:
